@@ -1,6 +1,6 @@
 [gd_scene load_steps=16 format=3 uid="uid://cm0lcf73qa24s"]
 
-[ext_resource type="Script" uid="uid://md503lwdcudx" path="res://player.gd" id="1_i3pqv"]
+[ext_resource type="Script" uid="uid://md503lwdcudx" path="res://scripts/player.gd" id="1_i3pqv"]
 [ext_resource type="Texture2D" uid="uid://cv84fs8f7x1ls" path="res://art/Gangsters_1/Idle.png" id="1_onrkg"]
 [ext_resource type="Texture2D" uid="uid://bblic7iuom117" path="res://art/Gangsters_1/Walk.png" id="2_i3pqv"]
 
