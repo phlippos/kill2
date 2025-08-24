@@ -102,4 +102,6 @@ animation = &"idle"
 position = Vector2(-5, 30)
 shape = SubResource("CapsuleShape2D_onrkg")
 
+[node name="PlatformContainer" type="Node2D" parent="."]
+
 [connection signal="body_entered" from="." to="." method="_on_bullet_body_entered"]
