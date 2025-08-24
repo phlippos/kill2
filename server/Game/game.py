@@ -1,3 +1,11 @@
+
+from enum import Enum
+from player import Player
+class Status(Enum):
+    FINISHED = 1
+    STARTED = 2
+    WAITING = 3
+    
 class Game:
     """
     The Game class handles the core game logic:
@@ -7,7 +15,8 @@ class Game:
     - Managing scores and win conditions
     - Providing game data for broadcasting to clients
     """
-
+    MAP_WIDTH = 1152
+    MAP_HEIGHT = 648
     def __init__(self):
         """
         Initializes the game state.
@@ -21,9 +30,11 @@ class Game:
             status (str): Indicates current state (e.g., 'waiting', 'running', 'ended').
             map_data (object/dict): Stores map layout, boundaries, obstacles.
         """
-        pass
-
-    def add_player(self, player_id, initial_data):
+        self.players = dict()
+        self.status = Status.WAITING.value
+        self.delta_time = 1/60
+        
+    def add_player(self, player_id, username ,initial_data, connection):
         """
         Adds a player to the game state.
 
@@ -35,8 +46,10 @@ class Game:
             - Called when a player joins a room and game starts.
             - Initializes their score, health, and position.
         """
-        pass
-
+        
+        player = Player(player_id,username, connection, initial_data.get("position"), initial_data.get("team"))
+        self.players[player_id] = player
+        
     def remove_player(self, player_id):
         """
         Removes a player from the game state.
@@ -48,7 +61,11 @@ class Game:
             - Called when a player disconnects or leaves the game.
             - Removes their bullets and related state data.
         """
-        pass
+        if player_id in self.players.keys():
+            self.players.pop(player_id)
+            return True
+        return False
+            
     
     def update_player_position(self, player_id, direction):
         """
@@ -61,7 +78,12 @@ class Game:
         Usage:
             - Called on each tick/frame when the server processes player input.
         """
-        pass
+        player = self.players[player_id]
+        dx, dy = direction
+        new_x = player.position[0] + dx * player.speed * self.delta_time
+        new_y = player.position[1] + dy * player.speed * self.delta_time
+        new_x, new_y = self.clamp_position(new_x, new_y)
+        player.position = (new_x, new_y)
     
     def fire_bullet(self, player_id, position, direction):
         """
@@ -107,6 +129,25 @@ class Game:
         """
         pass
     
+    def clamp_position(self,x,y):
+        """
+        Clamp a given position within the boundaries of the game map.
+
+        Args:
+            x (float): The x-coordinate to clamp.
+            y (float): The y-coordinate to clamp.
+
+        Returns:
+            tuple: A tuple (x, y) where both coordinates are constrained
+                to be within the map dimensions [0, MAP_WIDTH] and [0, MAP_HEIGHT].
+
+        Purpose:
+            - Prevents the player or objects from moving outside the map boundaries.
+        """
+        x = max(0,min(x,Game.MAP_WIDTH))
+        y = max(0,min(y,Game.MAP_HEIGHT))
+        return x,y
+    
     def update_scores(self, collision_events):
         """
         Updates scores based on collision events.
@@ -144,7 +185,24 @@ class Game:
         Usage:
             - Called by GameRoom.broadcast_game_state() to send to clients.
         """
-        pass
+        players_data = []
+        
+        for player in self.players.values():
+            players_data.append(
+                {
+                    "player_id" : player.id,
+                    "username" : player.username,
+                    "player_position" : player.position,
+                    "player_direction" : player.direction,
+                    "player_health" : player.health,
+                    "player_is_alive" : player.is_alive,
+                    "player_score" : player.score
+                }
+            )
+            
+        return {
+            "players" : players_data 
+        }
     
     def reset(self):
         """
@@ -167,7 +225,9 @@ class Game:
             - Called by GameRoom.tick().
             - Updates player movements, bullets, collisions, and scores.
         """
-        pass
+        for player in self.players:
+            self.update_player_position(player, delta_time)
+            #player.update_bullets()
 
 
     def log_event(self, event_type, details):

@@ -1,47 +1,47 @@
 [gd_scene load_steps=16 format=3 uid="uid://cm0lcf73qa24s"]
 
-[ext_resource type="Script" uid="uid://md503lwdcudx" path="res://scripts/player.gd" id="1_i3pqv"]
-[ext_resource type="Texture2D" uid="uid://cv84fs8f7x1ls" path="res://art/Gangsters_1/Idle.png" id="1_onrkg"]
-[ext_resource type="Texture2D" uid="uid://bblic7iuom117" path="res://art/Gangsters_1/Walk.png" id="2_i3pqv"]
+[ext_resource type="Script" uid="uid://md503lwdcudx" path="res://scripts/player.gd" id="1_qhqgy"]
+[ext_resource type="Texture2D" uid="uid://cv84fs8f7x1ls" path="res://art/Gangsters_1/Idle.png" id="2_dqkch"]
+[ext_resource type="Texture2D" uid="uid://bblic7iuom117" path="res://art/Gangsters_1/Walk.png" id="3_qlg0r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hqtel"]
-atlas = ExtResource("1_onrkg")
+atlas = ExtResource("2_dqkch")
 region = Rect2(0, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2hs0m"]
-atlas = ExtResource("1_onrkg")
+atlas = ExtResource("2_dqkch")
 region = Rect2(256, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1jxqw"]
-atlas = ExtResource("1_onrkg")
+atlas = ExtResource("2_dqkch")
 region = Rect2(384, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_b26j0"]
-atlas = ExtResource("1_onrkg")
+atlas = ExtResource("2_dqkch")
 region = Rect2(640, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n7ghd"]
-atlas = ExtResource("2_i3pqv")
+atlas = ExtResource("3_qlg0r")
 region = Rect2(0, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ivps1"]
-atlas = ExtResource("2_i3pqv")
+atlas = ExtResource("3_qlg0r")
 region = Rect2(256, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_urp6f"]
-atlas = ExtResource("2_i3pqv")
+atlas = ExtResource("3_qlg0r")
 region = Rect2(384, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_bwjto"]
-atlas = ExtResource("2_i3pqv")
+atlas = ExtResource("3_qlg0r")
 region = Rect2(512, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q13i1"]
-atlas = ExtResource("2_i3pqv")
+atlas = ExtResource("3_qlg0r")
 region = Rect2(1024, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pylmc"]
-atlas = ExtResource("2_i3pqv")
+atlas = ExtResource("3_qlg0r")
 region = Rect2(1152, 0, 128, 128)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_pbfsw"]
@@ -92,7 +92,7 @@ radius = 17.0
 height = 72.0
 
 [node name="player" type="Area2D"]
-script = ExtResource("1_i3pqv")
+script = ExtResource("1_qhqgy")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_pbfsw")

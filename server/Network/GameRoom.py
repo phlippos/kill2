@@ -1,5 +1,6 @@
 from Game.game import Game
-
+import json
+import asyncio
 
 
 
@@ -51,8 +52,8 @@ class GameRoom:
                     "player_info" : player_info
                 }
             )
-            return {"status" : True, "server_message": f"player is added to the gameroom({self.room_id})."}
-        return {"status" : False, "server_message" : f"Fail!!\nplayer can not be added to a gameroom. "}
+            return True
+        return False
     
     def remove_player(self, ws):
         """
@@ -72,8 +73,8 @@ class GameRoom:
             for player in self.players:
                 if player["websocket"] == ws:
                     self.players.remove(player)
-                    return{"status" : True, "server_message" : f"{player.username} exit"}
-        return {"status" : False, "server_message" : f"Fail to remove"}
+                    return True
+        return False
     
     async def broadcast(self, message, exclude_ws = None):
         """
@@ -90,7 +91,22 @@ class GameRoom:
         Usage:
             To broadcast game updates, chat, or notifications to all players.
         """
-        pass
+        if not self.players:
+            return
+
+        data = json.dumps(message)
+
+        websockets_to_send = [
+            player["websocket"]
+            for player in self.players
+            if player["websocket"] != exclude_ws
+        ]
+
+        if websockets_to_send:
+            await asyncio.gather(
+                *(ws.send(data) for ws in websockets_to_send),
+                return_exceptions=True
+            )
     
     
     async def broadcast_game_state(self, game_state):
