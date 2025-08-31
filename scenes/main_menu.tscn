@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://bsqofb66c2uy3"]
+
+[ext_resource type="Script" uid="uid://cjvu3408l0im5" path="res://scripts/main_menu.gd" id="1_l6cm7"]
+
+[node name="MainMenu" type="Panel"]
+offset_top = -3.05176e-05
+offset_right = 1150.0
+offset_bottom = 655.0
+script = ExtResource("1_l6cm7")
+
+[node name="UsernameTextField" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 304.0
+offset_top = 284.0
+offset_right = 759.0
+offset_bottom = 330.0
+text = "USERNAME"
+
+[node name="StartButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.007
+anchor_bottom = 0.012
+offset_left = 308.0
+offset_top = 349.0
+offset_right = 515.95
+offset_bottom = 375.14
+text = "Play"
+
+[node name="ExitButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.007
+anchor_bottom = 0.012
+offset_left = 537.0
+offset_top = 349.0
+offset_right = 757.488
+offset_bottom = 379.592
+text = "Exit
+"
+
+[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="ExitButton" to="." method="_on_exit_button_pressed"]

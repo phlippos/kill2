@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://i5nm8p1hve10"]
+
+[ext_resource type="Script" uid="uid://drmvqscufjtf" path="res://scripts/search_panel.gd" id="1_lohjt"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_gutec"]
+font_size = 35
+shadow_size = 17
+
+[node name="SearchPanel" type="Panel"]
+offset_left = -3.0
+offset_top = 1.0
+offset_right = 1150.0
+offset_bottom = 651.0
+script = ExtResource("1_lohjt")
+
+[node name="SearchingGameLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 315.0
+offset_top = 284.0
+offset_right = 860.0
+offset_bottom = 405.0
+text = "Searching for game"
+label_settings = SubResource("LabelSettings_gutec")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 435.0
+offset_right = 1048.0
+offset_bottom = 466.0
+text = "Cancel"
