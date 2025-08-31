@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="kill2"
-run/main_scene="uid://cyu1c5ga4q8se"
+run/main_scene="uid://c8u6r1tn7yt4s"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 

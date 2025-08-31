@@ -102,6 +102,9 @@ animation = &"idle"
 position = Vector2(-5, 30)
 shape = SubResource("CapsuleShape2D_onrkg")
 
+<<<<<<< Updated upstream:scenes/player.tscn
 [node name="PlatformContainer" type="Node2D" parent="."]
 
+=======
+>>>>>>> Stashed changes:player.tscn
 [connection signal="body_entered" from="." to="." method="_on_bullet_body_entered"]
