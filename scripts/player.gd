@@ -26,15 +26,17 @@ func handle_input() -> void:
 		dir_x -= 1
 	if Input.is_action_pressed("move_right"):
 		dir_x += 1
+		
+	if Input.is_action_just_pressed("shot"):
+		$AnimatedSprite2D.play("shot")
 	
-
 	if Input.is_action_just_pressed("jump"):
 		if is_on_floor():
 
 			velocity.y = -jump_force
-			jump_count = 1
+			jump_count = 0
 			$AnimatedSprite2D.play("jump")
-		elif jump_count < max_jumps:
+		elif jump_count < max_jumps - 1:
 
 			velocity.y = -jump_force
 			jump_count += 1

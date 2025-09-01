@@ -21,6 +21,8 @@ offset_right = 860.0
 offset_bottom = 405.0
 text = "Searching for game"
 label_settings = SubResource("LabelSettings_gutec")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 0
