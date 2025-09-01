@@ -29,6 +29,9 @@ func _ready() -> void:
 func handle_input() -> void:
 	var dir_x := 0
 	
+	var mouse_pos = get_global_mouse_position()
+	var mouse_direction = mouse_pos.x - global_position.x
+	
 	if Input.is_action_just_pressed("shot") and not is_shooting:
 		fire()
 		is_shooting = true
@@ -55,8 +58,11 @@ func handle_input() -> void:
 		jump_count = 0
 	
 	velocity.x = dir_x * speed
+	
 	if dir_x != 0:
 		$AnimatedSprite2D.flip_h = dir_x < 0
+	else:
+		$AnimatedSprite2D.flip_h = mouse_direction < 0
 	
 	if not is_shooting:
 		if is_on_floor():
