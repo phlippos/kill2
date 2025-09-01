@@ -4,18 +4,21 @@ extends CharacterBody2D
 @export var jump_force: int = 400
 @export var max_jumps: int = 2 
 @onready var health_bar = $HealthBar
+@export var username = ""
+
 var screen_size: Vector2
 var hp: int = 100
 var player_id: int
 var status: bool = true
 var jump_count: int = 0 
 
+
 func _ready() -> void:
 	screen_size = get_viewport_rect().size
 	position = Vector2(screen_size.x / 2, screen_size.y / 2)
 	$AnimatedSprite2D.play("idle")
 	health_bar._setup_health_bar(100.0, true)
-
+	
 func handle_input() -> void:
 	var dir_x := 0
 	
@@ -80,3 +83,8 @@ func _physics_process(delta: float) -> void:
 		velocity.y += gravity * delta
 	handle_input()
 	move_and_slide()
+func set_username(username: String) -> void:
+	self.username = username
+	$UserNameLabel.text = self.username
+	print(self.username)
+	print($UserNameLabel.text)

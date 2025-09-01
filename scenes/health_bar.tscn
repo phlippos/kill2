@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://c5rik6a2b6m08"]
 
-[ext_resource type="Script" uid="uid://d1hoyqcqhb4mn" path="res://scenes/health_bar.gd" id="1_1bvlm"]
+[ext_resource type="Script" uid="uid://d1hoyqcqhb4mn" path="res://scripts/health_bar.gd" id="1_1bvlm"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iwqyq"]
 draw_center = false

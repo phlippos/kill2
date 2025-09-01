@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://ciesjqjqs34fq"]
 
-[ext_resource type="Script" uid="uid://6fdyax846ayk" path="res://scenes/main.gd" id="1_jyhfs"]
+[ext_resource type="Script" uid="uid://6fdyax846ayk" path="res://scripts/main.gd" id="1_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://bsqofb66c2uy3" path="res://scenes/main_menu.tscn" id="1_sugp2"]
-[ext_resource type="PackedScene" uid="uid://cs00xqm5d7fc2" path="res://scenes/game.tscn" id="2_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://cs00xqm5d7fc2" path="res://scenes/game.tscn" id="3_sugp2"]
 [ext_resource type="PackedScene" uid="uid://i5nm8p1hve10" path="res://scenes/search_panel.tscn" id="3_tbgi4"]
 
 [node name="Main" type="Control"]
@@ -23,4 +23,5 @@ offset_top = 0.0
 offset_right = 1153.0
 offset_bottom = 650.0
 
-[node name="Game" parent="." instance=ExtResource("2_jyhfs")]
+[node name="Game" parent="." instance=ExtResource("3_sugp2")]
+position = Vector2(0, -3)
