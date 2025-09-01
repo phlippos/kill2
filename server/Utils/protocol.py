@@ -16,6 +16,7 @@ class MessageType(Enum):
     CHAT = "chat"
     WELCOME = "welcome"
     WAITING = "waiting"
+    JOIN = "join"
     
 
 class Protocol:
@@ -67,9 +68,6 @@ class Protocol:
         except Exception as e:
             print(f"Beklenmeyen hata: {e}")
             return None
-            
-        
-
 
     def create_error_response(self, error_type, details=""):
         """
@@ -184,7 +182,7 @@ class Protocol:
         pass
 
     # JOIN message
-    def serialize_join(self, player_id, username):
+    def serialize_join(self, player_id, username, game_room_id):
         """
         Create a JOIN message structure.
 
@@ -195,7 +193,16 @@ class Protocol:
         Returns:
             dict: { "type": "JOIN", "data": { "player_id": ..., "username": ... } }
         """
-        pass
+        return json.dumps(
+            {
+                "type": "join",
+                "data":{
+                    "player_id": player_id,
+                    "username": username,
+                    "game_room_id": game_room_id,
+                }
+            }
+        )
 
     def deserialize_join(self, data):
         """
@@ -207,7 +214,10 @@ class Protocol:
         Returns:
             tuple: (player_id, username)
         """
-        pass
+        return (
+            data.get("player_id"),
+            data.get("username")
+            )
 
     # LEAVE message
     def serialize_leave(self, player_id):
@@ -233,3 +243,18 @@ class Protocol:
             str: player_id
         """
         pass
+
+    def serialize_connect(self, player_id):
+        """_summary_
+
+        Args:
+            player_id (int): 
+        Returns:
+            dict: {"type": "CONNECT", "data": {"player_id": ...}}
+        """
+        return json.dumps({"type":"connect",
+                "data": {
+                    "player_id" : player_id,
+                    "status" : "CONNECTED"
+                    }
+                })

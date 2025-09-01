@@ -1,6 +1,9 @@
+import sys, os
+sys.path.append(os.path.dirname(__file__))
 
 from enum import Enum
 from player import Player
+
 class Status(Enum):
     FINISHED = 1
     STARTED = 2

@@ -1,5 +1,14 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
+import asyncio
+from websockets.asyncio.server import serve
+from websockets.exceptions import ConnectionClosedOK
+from Utils.logger import Logger
+from Utils.protocol import Protocol, MessageType
+import json
+from GameRoom import GameRoom
 
 class GameServer: 
     """
@@ -7,6 +16,7 @@ class GameServer:
         It handles incoming connections, assigns players to game rooms,
         processes messages, and coordinates broadcasts.
     """
+    player_counter = 0
     def __init__(self, host = "localhost", port = 8765, max_rooms = 10):
         """
         Initializes the GameServer.
@@ -25,10 +35,11 @@ class GameServer:
         """
         self.host = host
         self.port = port
-        self.rooms = []
+        self.rooms = {}
         self.clients = {}
         self.max_rooms = max_rooms
         self.server = None
+        self.protocol = Protocol()
         
     async def start_server(self):
         """
@@ -39,9 +50,12 @@ class GameServer:
             - Register `handle_client` as the connection handler.
             - Begin listening for clients.
         """
-        pass
-
-    async def handle_client(self, websocket, path):
+        print("server başlatılıyor")
+        async with serve(self.handle_client, self.host, self.port) as server:
+            print("server başlatıldı")
+            await asyncio.Future()
+           
+    async def handle_client(self, websocket):
         """
         Handles a new client connection.
         
@@ -55,8 +69,58 @@ class GameServer:
             - Parse messages and call relevant handlers.
             - Remove client on disconnect.
         """
-        pass
+        Logger.send_log("client_info",f"Client connected : {websocket.remote_address}")
+        self.clients[GameServer.player_counter] = {"websocket": websocket}
+        message = self.protocol.serialize_connect(GameServer.player_counter)
+        GameServer.player_counter += 1
+        await websocket.send(message)
+        try: 
+            async for message in websocket:
+                Logger.send_log("client_info",f"Received message from client : {message}")
+                decoded_message = self.protocol.decode_message(message)
+                await self.process_client_message(websocket,decoded_message)
+        except ConnectionClosedOK:
+            Logger.send_log("client_info", f"Client disconnected")
+        finally:
+            for client in self.clients.keys():
+                if self.clients[client]["websocket"] == websocket:
+                    self.clients.pop(client)
+                    self.remove_player_from_room(websocket)
+                    
+    async def process_client_message(self,websocket,message):
+        print("1")
+        try:
+            message_type = message["type"]
+            if message_type == MessageType.JOIN.value:
+                await self.handle_client_join(websocket,message)
+        except Exception as e:
+            print("Message connection {e}")
+                   
+    async def handle_client_join(self,websocket,message):
+        print("2")
+        try:
+            player_data = message.get("data")
 
+            room = self.assign_player_to_room(websocket, player_data)
+
+            if room:  
+                waiting_message = {
+                    "type": "join",
+                    "data": {
+                        "room_id": room.room_id,
+                        "players_in_room": len(room.players),
+                        "status": room.status
+                    }
+                }
+                await websocket.send(json.dumps(waiting_message))
+
+                if room.is_room_full():
+                    print(f"Room is full {room.room_id}")
+                    await room.start_game()
+
+        except Exception as e:
+            print(f"player join : {e}")      
+        
     def create_room(self, max_players=4):
         """
         Creates a new GameRoom if capacity allows.
@@ -67,7 +131,9 @@ class GameServer:
         Returns:
             GameRoom: The newly created room instance, or None if max room limit reached.
         """
-        pass
+        gameroom = GameRoom(max_players)
+        self.rooms[gameroom.room_id] = gameroom
+        return gameroom
     
     def list_rooms(self):
         """
@@ -109,7 +175,18 @@ class GameServer:
             - If no available room, create a new one.
             - Add the player to the room.
         """
-        pass
+        for room in self.rooms.values():
+            if not room.is_room_full():
+                room.add_player(websocket, player_info)
+                return room
+
+        # No available room -> create new
+        new_room = self.create_room(1)
+        self.rooms[new_room.room_id] = new_room
+        new_room.add_player(websocket, player_info)
+        print(f"Yeni room oluşturuldu: {new_room.room_id}")
+        return new_room
+            
     
     def remove_player_from_room(self, websocket):
         """
@@ -123,8 +200,10 @@ class GameServer:
             - Remove them from that room.
             - If room is empty after removal, consider deleting the room.
         """
-        pass
-
+        for room in self.rooms.values():
+            room.remove_player(websocket)
+            if len(room.players) == 0:
+                del room
         
     async def broadcast_to_all(self, message):
         """
@@ -191,3 +270,12 @@ class GameServer:
             - Perform any necessary cleanup.
         """
         pass
+
+
+async def main():
+    gameserver = GameServer()
+    await gameserver.start_server()
+    
+if __name__ =="__main__":
+    asyncio.run(main())
+    

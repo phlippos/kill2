@@ -13,9 +13,7 @@ class GameRoom:
         self.max_player = max_player
         self.game = Game()
         GameRoom.room_counter += 1 
-        self.status 
-        self.game_settings
-        self.teams
+        self.status = "waiting"
         
     def is_room_full(self):
         """
@@ -47,7 +45,7 @@ class GameRoom:
         if ws and player_info and not self.is_room_full():
             self.players.append(
                 {
-                    "id" : player_info["id"],
+                    "id" : player_info["player_id"],
                     "websocket" : ws,
                     "player_info" : player_info
                 }
@@ -151,24 +149,12 @@ class GameRoom:
             When showing the lobby or sending player list updates to clients.
             For debugging.
         """
-        pass
-    def assign_team(self,player_id):
-        """
-        Parameters:
-            player_id: ID of the player to assign to a team.
-
-        Purpose: Assigns a player to a team (if the game mode supports teams).
-
-        What it should do:
-            Balance team distribution.
-            Add the player to self.teams structure.
-
-        Usage:
-            During game start or when players join a team-based match.
-        """
-        pass
+        players = []
+        for player in self.players:
+            players.append(player["player_info"]["username"])
+        return players
     
-    def start_game(self):
+    async def start_game(self):
         """
         Parameters: None.
         
@@ -182,7 +168,17 @@ class GameRoom:
             When the required number of players join.
             When an admin/host triggers the game start.
         """
-        pass
+        if len(self.players) >= 1:
+            self.status = "in_progress"
+        
+        await self.broadcast({
+            "type": "join",
+            "data": {
+                "room_id": self.room_id,
+                "players": self.get_player_list(),
+                "status": self.status,
+            }
+        })
     
     def end_game(self):
         """

@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://ciesjqjqs34fq"]
+[gd_scene load_steps=6 format=3 uid="uid://ciesjqjqs34fq"]
 
 [ext_resource type="Script" uid="uid://6fdyax846ayk" path="res://scripts/main.gd" id="1_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://bsqofb66c2uy3" path="res://scenes/main_menu.tscn" id="1_sugp2"]
 [ext_resource type="PackedScene" uid="uid://cs00xqm5d7fc2" path="res://scenes/game.tscn" id="3_sugp2"]
 [ext_resource type="PackedScene" uid="uid://i5nm8p1hve10" path="res://scenes/search_panel.tscn" id="3_tbgi4"]
+[ext_resource type="Script" uid="uid://baogah86oo022" path="res://scripts/network.gd" id="5_tbgi4"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -25,3 +26,8 @@ offset_bottom = 650.0
 
 [node name="Game" parent="." instance=ExtResource("3_sugp2")]
 position = Vector2(0, -3)
+
+[node name="Network" type="Node" parent="."]
+script = ExtResource("5_tbgi4")
+
+[connection signal="message_received" from="Network" to="SearchPanel" method="_on_network_message_received"]
