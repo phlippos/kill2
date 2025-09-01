@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cs00xqm5d7fc2"]
+[gd_scene load_steps=16 format=3 uid="uid://cs00xqm5d7fc2"]
 
 [ext_resource type="Texture2D" uid="uid://b5wsp4mqxegxk" path="res://art/Background/Background_01.png" id="1_0tnpc"]
 [ext_resource type="PackedScene" uid="uid://bonjk5jebny7r" path="res://scenes/player.tscn" id="3_u5sy4"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bhocxpxrcg28x" path="res://art/Platform/Ground_02.png" id="5_gee14"]
 [ext_resource type="Texture2D" uid="uid://cyx16h8u8j7tw" path="res://art/Platform/Ground_04.png" id="6_0tnpc"]
 [ext_resource type="Texture2D" uid="uid://dkv828lvgqvpb" path="res://art/Platform/Ground_08.png" id="7_vtaks"]
+[ext_resource type="PackedScene" uid="uid://crw34l5jqv8ei" path="res://scenes/bullet.tscn" id="8_gee14"]
 [ext_resource type="Texture2D" uid="uid://e0uv3r5qrwm8" path="res://art/mermi/images-removebg-preview.png" id="11_kvpfn"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_kvpfn"]
@@ -665,3 +666,7 @@ offset_left = 18.0
 offset_top = 17.0
 offset_right = 163.0
 offset_bottom = 181.0
+
+[node name="Bullet" parent="." instance=ExtResource("8_gee14")]
+
+[connection signal="body_entered" from="Bullet" to="Bullet" method="_on_body_entered"]

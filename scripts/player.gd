@@ -13,7 +13,7 @@ var status: bool = true
 var jump_count: int = 0 
 var is_shooting: bool = false
 var shot_timer: Timer  
-
+var bullet_scene = preload("res://scenes/bullet.tscn")
 func _ready() -> void:
 	screen_size = get_viewport_rect().size
 	position = Vector2(screen_size.x / 2, screen_size.y / 2)
@@ -30,7 +30,7 @@ func handle_input() -> void:
 	var dir_x := 0
 	
 	if Input.is_action_just_pressed("shot") and not is_shooting:
-		$AnimatedSprite2D.play("shot")
+		fire()
 		is_shooting = true
 		shot_timer.start()  
 	
@@ -89,7 +89,16 @@ func respawn(new_position: Vector2) -> void:
 		is_shooting = false
 
 func fire() -> void:
-	pass
+	$AnimatedSprite2D.play("shot")
+	print(global_position)
+	var bullet_scene_instance = bullet_scene.instantiate()
+	bullet_scene_instance.position = $"Gun/Muzzle".global_position
+	var dir_vector = (get_global_mouse_position() - global_position).normalized()
+	if dir_vector.x >=0:
+		bullet_scene_instance.direction = Vector2.RIGHT
+	else:
+		bullet_scene_instance.direction = Vector2.LEFT
+	get_parent().add_child(bullet_scene_instance)
 	
 func _on_bullet_body_entered(body: Node2D) -> void:
 	take_damage(20)
