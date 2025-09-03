@@ -5,10 +5,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import asyncio
 from websockets.asyncio.server import serve
 from websockets.exceptions import ConnectionClosedOK
-from Utils.logger import Logger
 from Utils.protocol import Protocol, MessageType
 import json
 from GameRoom import GameRoom
+from Utils.logger import Logger, LogType
 
 class GameServer: 
     """
@@ -69,35 +69,39 @@ class GameServer:
             - Parse messages and call relevant handlers.
             - Remove client on disconnect.
         """
-        Logger.send_log("client_info",f"Client connected : {websocket.remote_address}")
+        Logger.send_log(LogType.CLIENT_INFO, f"Client connected : {websocket.remote_address}")
         self.clients[GameServer.player_counter] = {"websocket": websocket}
         message = self.protocol.serialize_connect(GameServer.player_counter)
         GameServer.player_counter += 1
         await websocket.send(message)
         try: 
             async for message in websocket:
-                Logger.send_log("client_info",f"Received message from client : {message}")
+                Logger.send_log(LogType.CLIENT_INFO ,f"Received message from client : {message}")
                 decoded_message = self.protocol.decode_message(message)
                 await self.process_client_message(websocket,decoded_message)
         except ConnectionClosedOK:
-            Logger.send_log("client_info", f"Client disconnected")
+            Logger.send_log(LogType.CLIENT_INFO , f"Client disconnected")
         finally:
             for client in self.clients.keys():
                 if self.clients[client]["websocket"] == websocket:
                     self.clients.pop(client)
                     self.remove_player_from_room(websocket)
                     
-    async def process_client_message(self,websocket,message):
-        print("1")
+    async def process_client_message(self, websocket, message):
         try:
+
+            if message is None:
+                return
+        
             message_type = message["type"]
             if message_type == MessageType.JOIN.value:
-                await self.handle_client_join(websocket,message)
+                await self.handle_client_join(websocket, message)
+            elif message_type == MessageType.MOVE.value:
+                await self.handle_client_move(websocket, message)
         except Exception as e:
             print("Message connection {e}")
                    
     async def handle_client_join(self,websocket,message):
-        print("2")
         try:
             player_data = message.get("data")
 
@@ -119,7 +123,35 @@ class GameServer:
                     await room.start_game()
 
         except Exception as e:
-            print(f"player join : {e}")      
+            print(f"player join : {e}") 
+
+    async def handle_client_move(self, websocket, message):
+        try:
+            print(f"Raw move message received: {message}")
+            
+            move_data = self.protocol.deserialize_move(message)
+            print(f"Deserialized move data: {move_data}")
+            
+            if move_data:
+                x, y, direction, player_id = move_data
+                print(f"Parsed values - x: {x}, y: {y}, direction: {direction}, player_id: {player_id}")
+                
+                room = self.find_room_by_player(websocket)
+                print(f"Found room: {room}")
+                
+                if room and hasattr(room, 'game'):
+                    print(f"Players in game: {list(room.game.players.keys())}")
+                    if player_id in room.game.players:
+                        print(f"Player {player_id} found in game, updating position")
+                        room.game.update_player_position(player_id, direction)
+                        print(f"New player position: {room.game.players[player_id].position}")
+                    else:
+                        print(f"Player {player_id} NOT found in game players")
+            else:
+                print("Move data is None - deserialization failed")
+                
+        except Exception as e:
+            print(f"Move handling error: {e}")
         
     def create_room(self, max_players=4):
         """
@@ -236,6 +268,7 @@ class GameServer:
             - Handle server-wide events like cleanup.
         """
         pass
+    
 
     def log_event(self, event_type, details):
         """
@@ -257,7 +290,12 @@ class GameServer:
         Returns:
             GameRoom or None: The room the player belongs to.
         """
-        pass
+
+        for room in self.rooms.values():
+            for player in room.players:
+                if player["websocket"] == websocket:
+                    return room
+        return None
     
     
     async def shutdown(self):

@@ -121,13 +121,13 @@ class Protocol:
             tuple: (x, y, direction,player_id)
         """
         if message and message.get("type") == MessageType.MOVE.value:
-            data = message.get("data",{})
+            data = message.get("data", {})
             return (
                 data.get("x"),
-                data.get("y"),
+                data.get("y"), 
                 data.get("direction"),
                 data.get("player_id")
-                )
+            )
         return None
     # SHOOT message
     def serialize_shoot(self, target_id, weapon_type):

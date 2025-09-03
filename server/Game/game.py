@@ -20,6 +20,14 @@ class Game:
     """
     MAP_WIDTH = 1152
     MAP_HEIGHT = 648
+
+    STARTING_POSITIONS = [
+
+        {"position": (100, MAP_HEIGHT // 4), "direction": (1, 0)},      
+        {"position": (100, 3 * MAP_HEIGHT // 4), "direction": (1, 0)},  
+        {"position": (MAP_WIDTH - 100, MAP_HEIGHT // 4), "direction": (-1, 0)},   
+        {"position": (MAP_WIDTH - 100, 3 * MAP_HEIGHT // 4), "direction": (-1, 0)}  
+    ]
     def __init__(self):
         """
         Initializes the game state.
@@ -36,6 +44,7 @@ class Game:
         self.players = dict()
         self.status = Status.WAITING.value
         self.delta_time = 1/60
+        self.player_count = 0
         
     def add_player(self, player_id, username ,initial_data, connection):
         """
@@ -50,8 +59,19 @@ class Game:
             - Initializes their score, health, and position.
         """
         
-        player = Player(player_id,username, connection, initial_data.get("position"), initial_data.get("team"))
+        if self.player_count < len(self.STARTING_POSITIONS):
+            start_config = self.STARTING_POSITIONS[self.player_count]
+            start_position = start_config["position"]
+            start_direction = start_config["direction"]
+        else:
+            start_position = (100, 100)
+            start_direction = (1, 0)
+        
+        player = Player(player_id, username, connection, start_position, initial_data.get("team"))
+        player.direction = start_direction
+        
         self.players[player_id] = player
+        self.player_count += 1
         
     def remove_player(self, player_id):
         """
@@ -66,9 +86,31 @@ class Game:
         """
         if player_id in self.players.keys():
             self.players.pop(player_id)
+            self.player_count -= 1
             return True
         return False
-            
+
+    def get_starting_positions_info(self):
+        """
+        Returns information about starting positions for debugging/info purposes.
+        
+        Returns:
+            dict: Information about starting positions configuration.
+        """
+        return {
+            "total_positions": len(self.STARTING_POSITIONS),
+            "left_side_positions": 2,
+            "right_side_positions": 2,
+            "positions": [
+                {
+                    "index": i,
+                    "position": pos["position"],
+                    "direction": pos["direction"],
+                    "side": "left" if pos["direction"][0] > 0 else "right"
+                }
+                for i, pos in enumerate(self.STARTING_POSITIONS)
+            ]
+        }        
     
     def update_player_position(self, player_id, direction):
         """
@@ -81,13 +123,19 @@ class Game:
         Usage:
             - Called on each tick/frame when the server processes player input.
         """
+        if player_id not in self.players:
+            return
+            
         player = self.players[player_id]
         dx, dy = direction
         new_x = player.position[0] + dx * player.speed * self.delta_time
         new_y = player.position[1] + dy * player.speed * self.delta_time
         new_x, new_y = self.clamp_position(new_x, new_y)
         player.position = (new_x, new_y)
-    
+        
+        if dx != 0 or dy != 0:
+            player.rotate((dx, dy))
+
     def fire_bullet(self, player_id, position, direction):
         """
         Spawns a bullet in the game world.
@@ -231,6 +279,7 @@ class Game:
         for player in self.players:
             self.update_player_position(player, delta_time)
             #player.update_bullets()
+
 
 
     def log_event(self, event_type, details):

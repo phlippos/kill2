@@ -108,7 +108,7 @@ class Player:
         pass
     
     
-    def can_move(self,direction):
+    def can_move(self,direction = None):
         if self.is_alive:
             return True
         return False

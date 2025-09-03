@@ -31,7 +31,7 @@ class GameRoom:
             ws: WebSocket object of the connecting player.
             player_info: A dictionary containing player info (id, username, etc.).
 
-        Purpose: Adds a new player to the room’s self.players list.
+        Purpose: Adds a new player to the roomâ€™s self.players list.
         
         What it should do:
             Check room capacity.
@@ -42,17 +42,24 @@ class GameRoom:
             Called when a new client connects to the server.
             During lobby joining.
         """
+
         if ws and player_info and not self.is_room_full():
-            self.players.append(
-                {
-                    "id" : player_info["player_id"],
-                    "websocket" : ws,
-                    "player_info" : player_info
-                }
+            self.players.append({
+                "id": player_info["player_id"],
+                "websocket": ws,
+                "player_info": player_info
+            })
+
+            initial_data = {"position": (100, 100), "team": None}
+            self.game.add_player(
+                player_info["player_id"], 
+                player_info["username"], 
+                initial_data, 
+                ws
             )
             return True
         return False
-    
+        
     def remove_player(self, ws):
         """
         Parameters:
@@ -120,14 +127,24 @@ class GameRoom:
         Usage:
             Called inside the game loop to synchronize clients with the server state.
         """
-        pass
+        if not self.players or not game_state:
+            return
+            
+        message = {
+            "type": "game_state",
+            "data": {
+                "game_state": game_state
+            }
+        }
+        
+        await self.broadcast(message)
     
     def find_player_by_id(self, player_id):
         """
         Parameters:
             player_id: ID of the player to search for.
 
-        Purpose: Finds and returns a player’s info from self.players.
+        Purpose: Finds and returns a playerâ€™s info from self.players.
 
         Usage:
             When sending a private message.
@@ -179,7 +196,8 @@ class GameRoom:
                 "status": self.status,
             }
         })
-    
+        
+
     def end_game(self):
         """
         Parameters: None.
@@ -216,7 +234,7 @@ class GameRoom:
         """
         Parameters: None.
 
-        Purpose: Represents the server’s game loop tick.
+        Purpose: Represents the serverâ€™s game loop tick.
         
         What it should do:
             Update game state (self.game.update_game_state()).
@@ -231,7 +249,7 @@ class GameRoom:
     def send_private_message(self, player_id, message):
         """
         Parameters:
-            player_id: The recipient player’s ID.
+            player_id: The recipient playerâ€™s ID.
             message: The content to send.
 
         Purpose: Sends a private message to one specific player.

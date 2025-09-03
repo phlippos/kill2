@@ -9,6 +9,7 @@ var game_room_id: int
 signal message_received(message: Dictionary)
 
 func _ready():
+	add_to_group("network")
 	if !establish_connection_with_server():
 		set_process(false)
 		print("connection failed")
@@ -23,13 +24,12 @@ func _process(delta: float) -> void:
 				var packet = websocket.get_packet().get_string_from_utf8()
 				var raw_data = JSON.parse_string(packet)
 				print(raw_data)
-				emit_signal("message_received",raw_data)
 				if raw_data != null:
 					if raw_data["data"].has("player_id"):
 						player_id = raw_data["data"]["player_id"]
 					if raw_data["data"].has("status"):
 						player_status = raw_data["data"]["status"]
-					
+					emit_signal("message_received",raw_data)
 				#print("Received: ", packet)
 		WebSocketPeer.STATE_CLOSED:
 			print("connection closed")
@@ -67,3 +67,18 @@ func send_join_request(username: String) -> void:
 			}
 		}
 		websocket.send_text(JSON.stringify(data))
+		
+func send_movement_data(pos_x: float, pos_y: float, direction_x: float, direction_y: float):
+	print("Sending movement: ", pos_x, pos_y, direction_x, direction_y)  
+	if websocket.get_ready_state() == WebSocketPeer.STATE_OPEN and player_id != null:
+		var data = {
+			"type": "move",
+			"data": {
+				"x": pos_x,
+				"y": pos_y,
+				"direction": [direction_x, direction_y],
+				"player_id": player_id
+			}
+		}
+		websocket.send_text(JSON.stringify(data))
+		

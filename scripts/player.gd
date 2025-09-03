@@ -58,7 +58,14 @@ func handle_input() -> void:
 		jump_count = 0
 	
 	velocity.x = dir_x * speed
-	
+
+	if dir_x != 0:
+		var network_node = get_tree().get_nodes_in_group("network")
+		if network_node.size() > 0:
+			network_node[0].send_movement_data(position.x, position.y, dir_x, 0)
+		else:
+			print("Network node bulunamadı!")
+		
 	if dir_x != 0:
 		$AnimatedSprite2D.flip_h = dir_x < 0
 	else:
@@ -118,5 +125,5 @@ func _physics_process(delta: float) -> void:
 func set_username(username: String) -> void:
 	self.username = username
 	$UserNameLabel.text = self.username
-	print(self.username)
-	print($UserNameLabel.text)
+	print("Player username: ", self.username)
+	print("Label text: ", $UserNameLabel.text)

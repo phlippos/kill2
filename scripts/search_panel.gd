@@ -11,6 +11,7 @@ func _ready() -> void:
 	var tween = get_tree().create_tween()
 	$SearchingGameLabel.text = base_text
 	Network.connect("message_received",_on_network_message_received)
+	
 func _process(delta: float) -> void:
 	timer += delta
 	if timer >= interval:
@@ -22,7 +23,6 @@ func _process(delta: float) -> void:
 	
 
 func _on_network_message_received(message: Dictionary) -> void:
-	print("1")
 	if message["type"] == "join":
 		var data: Dictionary = message["data"]
 		print(data)
