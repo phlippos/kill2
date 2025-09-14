@@ -3,7 +3,7 @@ from time import time
 
 class LogType(Enum):
     CLIENT_INFO = "client_info"
-    
+    GAME_INFO = "game_info"
 class Logger:
     @staticmethod
     def send_log(log_type,message):
@@ -11,5 +11,6 @@ class Logger:
             print("[Error] Log type not found in LogType")
             return
         print(f"[{log_type}] - {time()} - {message}")
+        
         
         

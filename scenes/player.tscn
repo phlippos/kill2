@@ -334,13 +334,12 @@ script = ExtResource("1_dqkch")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_wljb1")
-animation = &"shot"
-frame = 3
-frame_progress = 0.707847
+animation = &"hurt"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-3, 31)
+position = Vector2(-3, 29)
 shape = SubResource("CapsuleShape2D_lnu2h")
+one_way_collision = true
 
 [node name="HealthBar" parent="." instance=ExtResource("5_qlg0r")]
 offset_left = -15.0

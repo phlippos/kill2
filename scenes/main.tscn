@@ -31,3 +31,4 @@ position = Vector2(0, -3)
 script = ExtResource("5_tbgi4")
 
 [connection signal="message_received" from="Network" to="SearchPanel" method="_on_network_message_received"]
+[connection signal="message_received" from="Network" to="Game" method="_on_network_message_received"]
